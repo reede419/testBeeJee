@@ -54,4 +54,13 @@ class Controller_Main
             return $exception->getMessage();
         }
     }
+
+    function action_add()
+    {
+        try {
+            $this->model->addTask($_POST);
+        } catch (Exception $exception) {
+            return $exception->getMessage();
+        }
+    }
 }

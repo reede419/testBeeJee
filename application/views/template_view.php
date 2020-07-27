@@ -48,6 +48,16 @@ Order by:<br/>
     <a href="#" data-order="asc">ASC</a><br/>
     <a href="#" data-order="desc">DESC</a><br/>
 </div>
+<br>
+<div id="newTask">
+    <div class="new_task">
+        <input type="text" placeholder="user name" name="user_name">
+        <input type="email" placeholder="email" name="email">
+        <input type="text" placeholder="text" name="text">
+        <a class="add" href="#">Add</a>
+    </div>
+</div>
+<br>
 <ul id="myUL">
     <?php
     foreach($data['tasks']['tasks'] as $row)
@@ -56,7 +66,7 @@ Order by:<br/>
             $taskRow = '<li class="'.($row['done'] ? 'checked' : '').'" data-id="'.$row['id'].'">' . $row['user_name']
                 . ' (' . $row['email'] . ') '
                 . '<input type="text" value="'.$row['text'].'"> '
-                . '<a class="update" onclick="(\'changeStatus()\')">Update</a>'
+                . '<a class="update">Update</a>'
                 . '</li>';
         }else{
             $taskRow = '<li class="'.($row['done'] ? 'checked' : '').'" data-id="'.$row['id'].'">' . $row['user_name']
@@ -113,13 +123,31 @@ for($i = 1; $i<=round($data['tasks']['count']['0']/3); $i++){
         window.location.href = updateURLParameter(window.location.href, 'order', $(this).attr('data-order'));
     })
 
-    $('.update').click(function(ev){
-        let newText = $(ev.target).parent('li').children('input').val();
-        let id = $(ev.target).parent('li').attr('data-id');
+    $('.update').click(function(event){
+        event.preventDefault();
+        let newText = $(event.target).parent('li').children('input').val();
+        let id = $(event.target).parent('li').attr('data-id');
         $.post("/main/update", {
             "id": id,
             "text": newText
         });
+    });
+
+    $('.add').click(function(event){
+        event.preventDefault();
+        let username = $(event.target).parent('div').children('input[name="user_name"]').val();
+        let email = $(event.target).parent('div').children('input[name="email"]').val();
+        let text = $(event.target).parent('div').children('input[name="text"]').val();
+        if(!username || !email || !text) {
+            alert('Please fill all fields!')
+        }else{
+            $.post("/main/add", {
+                "user_name": username,
+                "email": email,
+                "text": text
+            });
+            $('.new_task input').val('')
+        }
     });
 
     let myNodelist = document.getElementsByTagName("LI");
@@ -144,7 +172,6 @@ for($i = 1; $i<=round($data['tasks']['count']['0']/3); $i++){
     let modal = document.getElementById('id01');
 
     window.onclick = function(event) {
-        console.log(modal);
         if (event.target == modal) {
             modal.style.display = "none";
         }

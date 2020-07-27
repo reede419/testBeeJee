@@ -49,6 +49,16 @@ trait MysqlConnect {
         return $getTasks->fetchAll();
     }
 
+    public function add($table, $fields)
+    {
+        if(!is_array($fields) || count($fields) == 0) return false;
+        $keys = implode(', ', array_keys($fields));
+        $values = implode('", "', array_values($fields));
+        $getTasks = $this->db->prepare("INSERT {$table} ({$keys}) VALUES (\"{$values}\")");
+        $getTasks->execute();
+        return $getTasks->fetch();
+    }
+
     private function setFilters($filters)
     {
         if(is_array($filters) && count($filters) == 0) {
